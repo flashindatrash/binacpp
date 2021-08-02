@@ -22,8 +22,7 @@
 
 using namespace std;
 
-typedef int (*CB)(Json::Value &json_value );
-
+typedef std::function<int(Json::Value &)> CB;
 
 class BinaCPP_websocket {
 
