@@ -1231,7 +1231,7 @@ BinaCPP::start_userDataStream( Json::Value &json_result )
 
 
 	string url(BINANCE_HOST);
-	url += "/api/v1/userDataStream";
+    url += "/api/v3/userDataStream";
 
 	vector <string> extra_http_header;
 	string header_chunk("X-MBX-APIKEY: ");
@@ -1290,7 +1290,7 @@ BinaCPP::keep_userDataStream( const char *listenKey )
 
 
 	string url(BINANCE_HOST);
-	url += "/api/v1/userDataStream";
+    url += "/api/v3/userDataStream";
 
 	vector <string> extra_http_header;
 	string header_chunk("X-MBX-APIKEY: ");
