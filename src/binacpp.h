@@ -58,7 +58,8 @@ class BinaCPP {
 		static void get_serverTime( Json::Value &json_result); 	
 
 		static void get_allPrices( Json::Value &json_result );
-		static double get_price( const char *symbol );
+        static void get_avgPrice( const char *symbol, Json::Value &json_result);
+        static double get_price( const char *symbol );
 
 		static void get_allBookTickers( Json::Value &json_result );
 		static void get_bookTicker( const char *symbol, Json::Value &json_result ) ;

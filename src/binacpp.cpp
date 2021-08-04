@@ -140,6 +140,46 @@ BinaCPP::get_allPrices( Json::Value &json_result )
 	}
 }
 
+//--------------------
+// Current average price for a symbol.
+/*
+    GET /api/v3/avgPrice
+*/
+void
+BinaCPP::get_avgPrice( const char *symbol, Json::Value &json_result)
+{
+
+    BinaCPP_logger::write_log( "<BinaCPP::get_avgPrice>" ) ;
+
+    string url(BINANCE_HOST);
+    url += "/api/v3/avgPrice?";
+
+    string querystring("symbol=");
+    querystring.append( string_toupper(symbol) );
+
+    url.append( querystring );
+    BinaCPP_logger::write_log( "<BinaCPP::get_avgPrice> url = |%s|" , url.c_str() ) ;
+
+    string str_result;
+    curl_api( url, str_result ) ;
+
+    if ( str_result.size() > 0 ) {
+
+        try {
+            Json::Reader reader;
+            json_result.clear();
+                reader.parse( str_result , json_result );
+
+        } catch ( exception &e ) {
+            BinaCPP_logger::write_log( "<BinaCPP::get_avgPrice> Error ! %s", e.what() );
+        }
+        BinaCPP_logger::write_log( "<BinaCPP::get_avgPrice> Done." ) ;
+
+    } else {
+        BinaCPP_logger::write_log( "<BinaCPP::get_avgPrice> Failed to get anything." ) ;
+    }
+}
+
 
 //----------
 // Get Single Pair's Price
