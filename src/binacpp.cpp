@@ -193,7 +193,7 @@ BinaCPP::get_price( const char *symbol )
 	string str_symbol = string_toupper(symbol);
 	get_allPrices( alltickers );
 
-	for ( int i = 0 ; i < alltickers.size() ; i++ ) {
+    for ( Json::ArrayIndex i = 0 ; i < alltickers.size() ; i++ ) {
 		if ( alltickers[i]["symbol"].asString() == str_symbol ) {
 			ret = atof( alltickers[i]["price"].asString().c_str() );
 			break;
@@ -255,7 +255,7 @@ BinaCPP::get_bookTicker( const char *symbol, Json::Value &json_result )
 	string str_symbol = string_toupper(symbol);
 	get_allBookTickers( alltickers );
 
-	for ( int i = 0 ; i < alltickers.size() ; i++ ) {
+    for ( Json::ArrayIndex i = 0 ; i < alltickers.size() ; i++ ) {
 		if ( alltickers[i]["symbol"].asString() == str_symbol ) {
 			
 			json_result = alltickers[i];
@@ -1880,7 +1880,7 @@ BinaCPP::curl_api_with_header( string &url, string &str_result, vector <string> 
 		if ( extra_http_header.size() > 0 ) {
 			
 			struct curl_slist *chunk = NULL;
-			for ( int i = 0 ; i < extra_http_header.size() ;i++ ) {
+            for ( size_t i = 0 ; i < extra_http_header.size() ;i++ ) {
 				chunk = curl_slist_append(chunk, extra_http_header[i].c_str() );
 			}
 			curl_easy_setopt(BinaCPP::curl, CURLOPT_HTTPHEADER, chunk);

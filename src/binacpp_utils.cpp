@@ -43,7 +43,7 @@ bool replace_string( string& str, const char *from, const char *to) {
 
 //-----------------------
 void string_toupper( string &src) {
-    for ( int i = 0 ; i < src.size() ; i++ ) {
+    for ( size_t i = 0 ; i < src.size() ; i++ ) {
         src[i] = toupper(src[i]);
     }
 }
@@ -51,7 +51,7 @@ void string_toupper( string &src) {
 //------------------
 string string_toupper( const char *cstr ) {
     string ret;
-    for ( int i = 0 ; i < strlen( cstr ) ; i++ ) {
+    for ( size_t i = 0 ; i < strlen( cstr ) ; i++ ) {
         ret.push_back( toupper(cstr[i]) );
     }
     return ret;
