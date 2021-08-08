@@ -419,7 +419,7 @@ BinaCPP::get_24hr( const char *symbol, Json::Value &json_result )
 	BinaCPP_logger::write_log( "<BinaCPP::get_24hr>" ) ;
 
 	string url(BINANCE_HOST);  
-	url += "/api/v1/ticker/24hr?";
+    url += "/api/v3/ticker/24hr?";
 
 	string querystring("symbol=");
 	querystring.append( symbol );
