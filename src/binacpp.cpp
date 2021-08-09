@@ -1892,7 +1892,9 @@ BinaCPP::curl_api_with_header( string &url, string &str_result, vector <string> 
 				curl_easy_setopt(BinaCPP::curl, CURLOPT_CUSTOMREQUEST, action.c_str() );
 			}
 			curl_easy_setopt(BinaCPP::curl, CURLOPT_POSTFIELDS, post_data.c_str() );
- 		}
+        } else {
+            curl_easy_setopt(BinaCPP::curl, CURLOPT_HTTPGET, true );
+        }
 
 		res = curl_easy_perform(BinaCPP::curl);
 
