@@ -11,6 +11,7 @@
 #include <map>
 #include <vector>
 #include <exception>
+#include <functional>
 
 #include <json/json.h>
 #include <libwebsockets.h>
