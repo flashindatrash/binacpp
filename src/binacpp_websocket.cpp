@@ -33,26 +33,28 @@ BinaCPP_websocket::event_cb( struct lws *wsi, enum lws_callback_reasons reason, 
 			break;
 
 		case LWS_CALLBACK_CLIENT_RECEIVE:
+        {
 			
-			/* Handle incomming messages here. */
+            Json::Value json_result;
+            /* Handle incomming messages here. */
 			try {
 
 				//BinaCPP_logger::write_log("%p %s",  wsi, (char *)in );
 
 				string str_result = string( (char*)in );
 				Json::Reader reader;
-				Json::Value json_result;	
-				reader.parse( str_result , json_result );
+                reader.parse( str_result , json_result );
 
 				if ( handles.find( wsi ) != handles.end() ) {
 					handles[wsi]( json_result );
 				}
 
 			} catch ( exception &e ) {
+                BinaCPP_logger::write_log( "<BinaCPP_websocket::event_cb> \n%s", json_result.toStyledString().c_str() );
 		 		BinaCPP_logger::write_log( "<BinaCPP_websocket::event_cb> Error ! %s", e.what() ); 
 			}   	
 			break;
-
+        }
 		case LWS_CALLBACK_CLIENT_WRITEABLE:
 		{
 			break;
