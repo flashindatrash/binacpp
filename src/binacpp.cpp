@@ -1887,12 +1887,14 @@ BinaCPP::curl_api_with_header( string &url, string &str_result, vector <string> 
 		}
 
 		if ( post_data.size() > 0 || action == "POST" || action == "PUT" || action == "DELETE" ) {
-
 			if ( action == "PUT" || action == "DELETE" ) {
 				curl_easy_setopt(BinaCPP::curl, CURLOPT_CUSTOMREQUEST, action.c_str() );
-			}
+            } else {
+                curl_easy_setopt(BinaCPP::curl, CURLOPT_CUSTOMREQUEST, NULL );
+            }
 			curl_easy_setopt(BinaCPP::curl, CURLOPT_POSTFIELDS, post_data.c_str() );
         } else {
+            curl_easy_setopt(BinaCPP::curl, CURLOPT_CUSTOMREQUEST, NULL );
             curl_easy_setopt(BinaCPP::curl, CURLOPT_HTTPGET, true );
         }
 
