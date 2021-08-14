@@ -1884,9 +1884,7 @@ BinaCPP::curl_api_with_header( string &url, string &str_result, vector <string> 
 				chunk = curl_slist_append(chunk, extra_http_header[i].c_str() );
 			}
 			curl_easy_setopt(BinaCPP::curl, CURLOPT_HTTPHEADER, chunk);
-        } else {
-            curl_easy_setopt(BinaCPP::curl, CURLOPT_HTTPHEADER, NULL );
-        }
+		}
 
 		if ( post_data.size() > 0 || action == "POST" || action == "PUT" || action == "DELETE" ) {
 			if ( action == "PUT" || action == "DELETE" ) {
@@ -1897,7 +1895,7 @@ BinaCPP::curl_api_with_header( string &url, string &str_result, vector <string> 
 			curl_easy_setopt(BinaCPP::curl, CURLOPT_POSTFIELDS, post_data.c_str() );
         } else {
             curl_easy_setopt(BinaCPP::curl, CURLOPT_CUSTOMREQUEST, NULL );
-            curl_easy_setopt(BinaCPP::curl, CURLOPT_POSTFIELDS, NULL );
+            curl_easy_setopt(BinaCPP::curl, CURLOPT_HTTPGET, true );
         }
 
 		res = curl_easy_perform(BinaCPP::curl);
