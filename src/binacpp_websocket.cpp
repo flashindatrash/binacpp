@@ -62,11 +62,16 @@ BinaCPP_websocket::event_cb( struct lws *wsi, enum lws_callback_reasons reason, 
 
 		case LWS_CALLBACK_CLOSED:
 		case LWS_CALLBACK_CLIENT_CONNECTION_ERROR:
+        {
+            Json::Value error;
+            error["code"] = -1001;
+            error["msg"] = "Connection closed";
 			if ( handles.find( wsi ) != handles.end() ) {
+                handles[wsi](error);
 				handles.erase(wsi);
 			}
 			break;
-
+        }
 		default:
 			break;
 	}
