@@ -130,13 +130,12 @@ BinaCPP_websocket::connect_endpoint (
 
 }
 
-
 //----------------------------
 // Entering event loop
 void 
 BinaCPP_websocket::enter_event_loop() 
 {
-	while( 1 )
+    while(not handles.empty())
 	{	
 		try {	
 			lws_service( context, 500 );
@@ -148,4 +147,10 @@ BinaCPP_websocket::enter_event_loop()
 	lws_context_destroy( context );
 }
 
-
+//----------------------------
+// Exit event loop
+void
+BinaCPP_websocket::exit_event_loop ()
+{
+    handles.clear();
+}

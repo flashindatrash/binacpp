@@ -41,6 +41,7 @@ class BinaCPP_websocket {
 		);
 		static void init();
 		static void enter_event_loop();
+        static void exit_event_loop();
 
 
 };
