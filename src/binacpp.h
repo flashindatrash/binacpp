@@ -49,7 +49,7 @@ class BinaCPP {
 		static void curl_api_with_header( string &url, string &result_json , vector <string> &extra_http_header, string &post_data, string &action );
 		static size_t curl_cb( void *content, size_t size, size_t nmemb, string *buffer ) ;
 		
-		static void init( string &api_key, string &secret_key);
+		static bool init( string &api_key, string &secret_key);
 		static void cleanup();
 
 

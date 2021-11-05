@@ -83,7 +83,7 @@ BinaCPP_websocket::event_cb( struct lws *wsi, enum lws_callback_reasons reason, 
 
 
 //-------------------
-void 
+bool
 BinaCPP_websocket::init( ) 
 {
 	struct lws_context_creation_info info;
@@ -96,12 +96,13 @@ BinaCPP_websocket::init( )
 	info.options |= LWS_SERVER_OPTION_DO_SSL_GLOBAL_INIT;
 
 	context = lws_create_context( &info );
+    return context != nullptr;
 }
 
 
 //----------------------------
 // Register call backs
-void
+bool
 BinaCPP_websocket::connect_endpoint ( 
 
 		CB cb,
@@ -125,9 +126,11 @@ BinaCPP_websocket::connect_endpoint (
 	ccinfo.ssl_connection = LCCSCF_USE_SSL | LCCSCF_ALLOW_SELFSIGNED | LCCSCF_SKIP_SERVER_CERT_HOSTNAME_CHECK;
 
 	struct lws* conn = lws_client_connect_via_info(&ccinfo);
+    if (conn == nullptr)
+        return false;
+
 	handles[conn] = cb;
-
-
+    return true;
 }
 
 //----------------------------

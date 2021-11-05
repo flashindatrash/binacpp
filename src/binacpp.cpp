@@ -26,13 +26,14 @@ CURL* BinaCPP::curl = NULL;
 
 
 //---------------------------------
-void 
+bool
 BinaCPP::init( string &api_key, string &secret_key ) 
 {
 	curl_global_init(CURL_GLOBAL_DEFAULT);
 	BinaCPP::curl = curl_easy_init();
 	BinaCPP::api_key = api_key;
 	BinaCPP::secret_key = secret_key;
+    return BinaCPP::curl != nullptr;
 }
 
 

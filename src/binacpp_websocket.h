@@ -35,11 +35,11 @@ class BinaCPP_websocket {
 	
 	public:
 		static int  event_cb( struct lws *wsi, enum lws_callback_reasons reason, void *user, void *in, size_t len );
-		static void connect_endpoint(
+		static bool connect_endpoint(
 			CB user_cb,
 			const char* path
 		);
-		static void init();
+		static bool init();
 		static void enter_event_loop();
         static void exit_event_loop();
 
