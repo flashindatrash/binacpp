@@ -71,7 +71,8 @@ class BinaCPP {
 
 
 		// API + Secret keys required
-		static void get_account( long recvWindow , Json::Value &json_result );
+		static void get_spot_account( long recvWindow , Json::Value &json_result );
+        static void get_lending_account( long recvWindow , Json::Value &json_result );
 		
 		static void get_myTrades( 
 			const char *symbol, 

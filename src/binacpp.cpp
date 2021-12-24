@@ -553,13 +553,13 @@ timestamp	LONG	YES
 
 
 void 
-BinaCPP::get_account( long recvWindow,  Json::Value &json_result ) 
+BinaCPP::get_spot_account( long recvWindow,  Json::Value &json_result )
 {	
 
-	BinaCPP_logger::write_log( "<BinaCPP::get_account>" ) ;
+	BinaCPP_logger::write_log( "<BinaCPP::get_spot_account>" ) ;
 
 	if ( api_key.size() == 0 || secret_key.size() == 0 ) {
-		BinaCPP_logger::write_log( "<BinaCPP::get_account> API Key and Secret Key has not been set." ) ;
+		BinaCPP_logger::write_log( "<BinaCPP::get_spot_account> API Key and Secret Key has not been set." ) ;
 		return ;
 	}
 
@@ -587,7 +587,7 @@ BinaCPP::get_account( long recvWindow,  Json::Value &json_result )
 	header_chunk.append( api_key );
 	extra_http_header.push_back(header_chunk);
 
-	BinaCPP_logger::write_log( "<BinaCPP::get_account> url = |%s|" , url.c_str() ) ;
+	BinaCPP_logger::write_log( "<BinaCPP::get_spot_account> url = |%s|" , url.c_str() ) ;
 	
 	string post_data = "";
 	
@@ -603,19 +603,96 @@ BinaCPP::get_account( long recvWindow,  Json::Value &json_result )
 			reader.parse( str_result , json_result );
 	    		
 	    	} catch ( exception &e ) {
-		 	BinaCPP_logger::write_log( "<BinaCPP::get_account> Error ! %s", e.what() ); 
+		 	BinaCPP_logger::write_log( "<BinaCPP::get_spot_account> Error ! %s", e.what() );
 		}   
-		BinaCPP_logger::write_log( "<BinaCPP::get_account> Done." ) ;
+		BinaCPP_logger::write_log( "<BinaCPP::get_spot_account> Done." ) ;
 	
 	} else {
-		BinaCPP_logger::write_log( "<BinaCPP::get_account> Failed to get anything." ) ;
+		BinaCPP_logger::write_log( "<BinaCPP::get_spot_account> Failed to get anything." ) ;
 	}
 
-	BinaCPP_logger::write_log( "<BinaCPP::get_account> Done.\n" ) ;
+	BinaCPP_logger::write_log( "<BinaCPP::get_spot_account> Done.\n" ) ;
 
 }
 
 
+
+
+
+//--------------------
+// Get current account information. (SIGNED)
+/*
+GET /sapi/v1/lending/union/account
+
+Parameters:
+Name		Type	Mandatory	Description
+recvWindow	LONG	NO
+timestamp	LONG	YES
+*/
+
+
+void
+BinaCPP::get_lending_account( long recvWindow,  Json::Value &json_result )
+{
+
+    BinaCPP_logger::write_log( "<BinaCPP::get_lending_account>" ) ;
+
+    if ( api_key.size() == 0 || secret_key.size() == 0 ) {
+        BinaCPP_logger::write_log( "<BinaCPP::get_lending_account> API Key and Secret Key has not been set." ) ;
+        return ;
+    }
+
+
+    string url(BINANCE_HOST);
+    url += "/sapi/v1/lending/union/account?";
+    string action = "GET";
+
+
+    string querystring("timestamp=");
+    querystring.append( to_string( get_current_ms_epoch() ) );
+
+    if ( recvWindow > 0 ) {
+        querystring.append("&recvWindow=");
+        querystring.append( to_string( recvWindow ) );
+    }
+
+    string signature =  hmac_sha256( secret_key.c_str() , querystring.c_str() );
+    querystring.append( "&signature=");
+    querystring.append( signature );
+
+    url.append( querystring );
+    vector <string> extra_http_header;
+    string header_chunk("X-MBX-APIKEY: ");
+    header_chunk.append( api_key );
+    extra_http_header.push_back(header_chunk);
+
+    BinaCPP_logger::write_log( "<BinaCPP::get_lending_account> url = |%s|" , url.c_str() ) ;
+
+    string post_data = "";
+
+    string str_result;
+    curl_api_with_header( url, str_result , extra_http_header , post_data , action ) ;
+
+
+    if ( str_result.size() > 0 ) {
+
+        try {
+            Json::Reader reader;
+            json_result.clear();
+            reader.parse( str_result , json_result );
+
+        } catch ( exception &e ) {
+            BinaCPP_logger::write_log( "<BinaCPP::get_lending_account> Error ! %s", e.what() );
+        }
+        BinaCPP_logger::write_log( "<BinaCPP::get_lending_account> Done." ) ;
+
+    } else {
+        BinaCPP_logger::write_log( "<BinaCPP::get_lending_account> Failed to get anything." ) ;
+    }
+
+    BinaCPP_logger::write_log( "<BinaCPP::get_lending_account> Done.\n" ) ;
+
+}
 
 
 
