@@ -71,9 +71,8 @@ class BinaCPP {
 
 
 		// API + Secret keys required
-		static void get_spot_account( long recvWindow , Json::Value &json_result );
-        static void get_lending_account( long recvWindow , Json::Value &json_result );
-		
+		static void get_account( long recvWindow , Json::Value &json_result );
+
 		static void get_myTrades( 
 			const char *symbol, 
 			int limit,
@@ -134,8 +133,7 @@ class BinaCPP {
 		static void keep_userDataStream( const char *listenKey  );
 		static void close_userDataStream( const char *listenKey );
 
-
-		// WAPI
+        // WAPI
 		static void withdraw( 
 			const char *asset,
 			const char *address,
@@ -166,6 +164,21 @@ class BinaCPP {
 			long recvWindow,
 			Json::Value &json_result );
 
+
+        // SAPI
+        static void get_savings( long recvWindow , Json::Value &json_result );
+
+        static void get_flexibleProducts(
+                const char *asset,
+                long recvWindow,
+                Json::Value &json_result );
+
+        static void redeem_flexibleProduct(
+                const char *productId,
+                double amount,
+                const char *type,
+                long recvWindow,
+                Json::Value &json_result );
 
 };
 
