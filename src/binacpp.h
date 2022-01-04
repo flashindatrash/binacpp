@@ -180,6 +180,17 @@ class BinaCPP {
                 long recvWindow,
                 Json::Value &json_result );
 
+        static void get_fixedProjects(
+                const char *asset,
+                const char *type,
+                const char *status,
+                const char *isSortAsc,
+                const char *sortBy,
+                long current,
+                long size,
+                long recvWindow,
+                Json::Value &json_result );
+
 };
 
 

@@ -2062,6 +2062,124 @@ BinaCPP::redeem_flexibleProduct(
 }
 
 
+//--------------------
+// Get Fixed and Activity Project List (SIGNED)
+/*
+GET /sapi/v1/lending/project/list
+
+Parameters:
+Name		Type	Mandatory	Description
+asset	    STRING	NO
+type	    ENUM	YES	        "ACTIVITY", "CUSTOMIZED_FIXED"
+status	    ENUM	NO	        "ALL", "SUBSCRIBABLE", "UNSUBSCRIBABLE"; default "ALL"
+isSortAsc	BOOLEAN	NO	        default "true"
+sortBy	    ENUM	NO	        "START_TIME", "LOT_SIZE", "INTEREST_RATE", "DURATION"; default "START_TIME"
+current	    LONG	NO	        Currently querying page. Start from 1. Default:1
+size	    LONG	NO	        Default:10, Max:100
+recvWindow	LONG	NO          The value cannot be greater than 60000
+timestamp	LONG	YES
+*/
+
+void
+BinaCPP::get_fixedProjects(
+        const char *asset,
+        const char *type,
+        const char *status,
+        const char *isSortAsc,
+        const char *sortBy,
+        long current,
+        long size,
+        long recvWindow,
+        Json::Value &json_result )
+{
+    BinaCPP_logger::write_log( "<BinaCPP::get_fixedProjects>" ) ;
+
+    if ( api_key.size() == 0 || secret_key.size() == 0 ) {
+        BinaCPP_logger::write_log( "<BinaCPP::get_fixedProjects> API Key and Secret Key has not been set." ) ;
+        return ;
+    }
+
+    string url(BINANCE_HOST);
+    url += "/sapi/v1/lending/project/list?";
+    string action = "GET";
+
+    string querystring("type=");
+    querystring.append(type);
+
+    if ( strlen( asset ) > 0 ) {
+        querystring.append("&asset=");
+        querystring.append(asset);
+    }
+
+    if ( strlen( status ) > 0 ) {
+        querystring.append("&status=");
+        querystring.append(status);
+    }
+
+    if ( strlen( isSortAsc ) > 0 ) {
+        querystring.append("&isSortAsc=");
+        querystring.append(isSortAsc);
+    }
+
+    if ( strlen( sortBy ) > 0 ) {
+        querystring.append("&sortBy=");
+        querystring.append(sortBy);
+    }
+
+    if ( current > 0 ) {
+        querystring.append("&current=");
+        querystring.append(to_string(current));
+    }
+
+    if ( size > 0 ) {
+        querystring.append("&size=");
+        querystring.append(to_string(size));
+    }
+
+    if ( recvWindow > 0 ) {
+        querystring.append("&recvWindow=");
+        querystring.append(to_string(recvWindow));
+    }
+
+    querystring.append("&timestamp=");
+    querystring.append(to_string( get_current_ms_epoch()));
+
+    string signature =  hmac_sha256( secret_key.c_str(), querystring.c_str() );
+    querystring.append("&signature=");
+    querystring.append(signature);
+
+    url.append( querystring );
+
+    vector <string> extra_http_header;
+    string header_chunk("X-MBX-APIKEY: ");
+    header_chunk.append( api_key );
+    extra_http_header.push_back(header_chunk);
+
+    string post_data = "";
+
+    BinaCPP_logger::write_log( "<BinaCPP::get_fixedProjects> url = |%s|" , url.c_str() ) ;
+
+    string str_result;
+    curl_api_with_header( url, str_result , extra_http_header, post_data , action ) ;
+
+    if ( str_result.size() > 0 ) {
+
+        try {
+            Json::Reader reader;
+            json_result.clear();
+            reader.parse( str_result , json_result );
+
+        } catch ( exception &e ) {
+            BinaCPP_logger::write_log( "<BinaCPP::get_fixedProjects> Error ! %s", e.what() );
+        }
+        BinaCPP_logger::write_log( "<BinaCPP::get_fixedProjects> Done." ) ;
+
+    } else {
+        BinaCPP_logger::write_log( "<BinaCPP::get_fixedProjects> Failed to get anything." ) ;
+    }
+
+    BinaCPP_logger::write_log( "<BinaCPP::get_fixedProjects> Done.\n" ) ;
+}
 
 //-----------------
 // Curl's callback
