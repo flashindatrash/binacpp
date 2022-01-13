@@ -110,16 +110,28 @@ BinaCPP::get_serverTime( Json::Value &json_result)
 //--------------------
 // Get Latest price for all symbols.
 /*
-	GET /api/v1/ticker/allPrices
+	GET /api/v3/ticker/price
+
+Name	Type		Mandatory	Description
+symbol	STRING		YES
+
 */
 void 
-BinaCPP::get_allPrices( Json::Value &json_result ) 
+BinaCPP::get_prices( const char *symbol, Json::Value &json_result )
 {	
 
-	BinaCPP_logger::write_log( "<BinaCPP::get_allPrices>" ) ;
+	BinaCPP_logger::write_log( "<BinaCPP::get_prices>" ) ;
 
 	string url(BINANCE_HOST);  
-	url += "/api/v1/ticker/allPrices";
+	url += "/api/v3/ticker/price?";
+
+    string querystring("");
+    if ( strlen( symbol ) > 0 ) {
+        querystring.append( "symbol=" );
+        querystring.append( symbol );
+    }
+
+    url.append( querystring );
 
 	string str_result;
 	curl_api( url, str_result ) ;
@@ -132,12 +144,12 @@ BinaCPP::get_allPrices( Json::Value &json_result )
 			reader.parse( str_result , json_result );
 	    		
 		} catch ( exception &e ) {
-		 	BinaCPP_logger::write_log( "<BinaCPP::get_allPrices> Error ! %s", e.what() ); 
+		 	BinaCPP_logger::write_log( "<BinaCPP::get_prices> Error ! %s", e.what() );
 		}   
-		BinaCPP_logger::write_log( "<BinaCPP::get_allPrices> Done." ) ;
+		BinaCPP_logger::write_log( "<BinaCPP::get_prices> Done." ) ;
 	
 	} else {
-		BinaCPP_logger::write_log( "<BinaCPP::get_allPrices> Failed to get anything." ) ;
+		BinaCPP_logger::write_log( "<BinaCPP::get_prices> Failed to get anything." ) ;
 	}
 }
 
@@ -180,30 +192,6 @@ BinaCPP::get_avgPrice( const char *symbol, Json::Value &json_result)
         BinaCPP_logger::write_log( "<BinaCPP::get_avgPrice> Failed to get anything." ) ;
     }
 }
-
-
-//----------
-// Get Single Pair's Price
-double
-BinaCPP::get_price( const char *symbol )
-{
-	BinaCPP_logger::write_log( "<BinaCPP::get_price>" ) ;
-
-	double ret = 0.0;
-	Json::Value alltickers;
-	string str_symbol = string_toupper(symbol);
-	get_allPrices( alltickers );
-
-    for ( Json::ArrayIndex i = 0 ; i < alltickers.size() ; i++ ) {
-		if ( alltickers[i]["symbol"].asString() == str_symbol ) {
-			ret = atof( alltickers[i]["price"].asString().c_str() );
-			break;
-		}
-		
-	}	
-	return ret;
-}
-
 
 
 
@@ -2225,7 +2213,7 @@ BinaCPP::curl_api_with_header( string &url, string &str_result, vector <string> 
 		curl_easy_setopt(BinaCPP::curl, CURLOPT_URL, url.c_str() );
 		curl_easy_setopt(BinaCPP::curl, CURLOPT_WRITEFUNCTION, BinaCPP::curl_cb);
 		curl_easy_setopt(BinaCPP::curl, CURLOPT_WRITEDATA, &str_result );
-		curl_easy_setopt(BinaCPP::curl, CURLOPT_SSL_VERIFYPEER, false);
+        curl_easy_setopt(BinaCPP::curl, CURLOPT_SSL_VERIFYPEER, false);
 		curl_easy_setopt(BinaCPP::curl, CURLOPT_ENCODING, "gzip");
 
 		if ( extra_http_header.size() > 0 ) {
