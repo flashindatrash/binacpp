@@ -22,6 +22,7 @@
 #include <map>
 #include <vector>
 #include <exception>
+#include <unordered_map>
 
 #include <curl/curl.h>
 #include <json/json.h>
@@ -38,7 +39,7 @@ class BinaCPP {
 	static string api_key;
 	static string secret_key;
 	static CURL* curl;
-
+    static unordered_map<string, int> used_weight;
 	
 
 	public:
@@ -52,6 +53,7 @@ class BinaCPP {
 		static bool init( string &api_key, string &secret_key);
 		static void cleanup();
 
+        static int get_usedWeight( string interval );
 
 		// Public API
 		static void get_exchangeInfo( Json::Value &json_result);

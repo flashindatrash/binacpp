@@ -21,6 +21,7 @@
 string BinaCPP::api_key = "";
 string BinaCPP::secret_key = "";
 CURL* BinaCPP::curl = NULL;
+unordered_map<string, int> BinaCPP::used_weight;
 
 
 
@@ -42,6 +43,14 @@ BinaCPP::cleanup()
 {
 	curl_easy_cleanup(BinaCPP::curl);
 	curl_global_cleanup();
+}
+
+int
+BinaCPP::get_usedWeight(string interval) {
+    auto find = used_weight.find(interval);
+    if (find == used_weight.end())
+        return 0;
+    return find->second;
 }
 
 //------------------
@@ -2209,11 +2218,14 @@ BinaCPP::curl_api_with_header( string &url, string &str_result, vector <string> 
 	CURLcode res;
 
 	if( BinaCPP::curl ) {
+        string result_headers;
 
 		curl_easy_setopt(BinaCPP::curl, CURLOPT_URL, url.c_str() );
 		curl_easy_setopt(BinaCPP::curl, CURLOPT_WRITEFUNCTION, BinaCPP::curl_cb);
 		curl_easy_setopt(BinaCPP::curl, CURLOPT_WRITEDATA, &str_result );
-        curl_easy_setopt(BinaCPP::curl, CURLOPT_SSL_VERIFYPEER, false);
+        curl_easy_setopt(BinaCPP::curl, CURLOPT_HEADERFUNCTION, BinaCPP::curl_cb);
+        curl_easy_setopt(BinaCPP::curl, CURLOPT_HEADERDATA, &result_headers);
+		curl_easy_setopt(BinaCPP::curl, CURLOPT_SSL_VERIFYPEER, false);
 		curl_easy_setopt(BinaCPP::curl, CURLOPT_ENCODING, "gzip");
 
 		if ( extra_http_header.size() > 0 ) {
@@ -2244,6 +2256,29 @@ BinaCPP::curl_api_with_header( string &url, string &str_result, vector <string> 
 			BinaCPP_logger::write_log( "<BinaCPP::curl_api> curl_easy_perform() failed: %s" , curl_easy_strerror(res) ) ;
 		} 	
 
+        if (not result_headers.empty()) {
+            vector<string> lines;
+            split_string(result_headers, '\n', lines);
+
+            for (string& line : lines) {
+                string x_mbx_used_weight = "x-mbx-used-weight";
+
+                if (line.find(x_mbx_used_weight) != 0)
+                    continue;
+
+                size_t delimiter = line.find(": ");
+                if (delimiter == string::npos)
+                    continue;
+
+                string interval;
+                if (delimiter > x_mbx_used_weight.size())
+                    interval = line.substr(x_mbx_used_weight.size() + 1, delimiter - x_mbx_used_weight.size() - 1);
+
+                string value = line.substr(delimiter + 2, line.size() - delimiter - 3);
+
+                used_weight[interval] = atoi(value.c_str());
+            }
+        }
 	}
 
 	BinaCPP_logger::write_log( "<BinaCPP::curl_api> done" ) ;
