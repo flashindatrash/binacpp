@@ -20,7 +20,7 @@
 
 string BinaCPP::api_key = "";
 string BinaCPP::secret_key = "";
-CURL* BinaCPP::curl = NULL;
+CURL* BinaCPP::curl = nullptr;
 unordered_map<string, int> BinaCPP::used_weight;
 
 
@@ -62,7 +62,7 @@ BinaCPP::get_exchangeInfo( Json::Value &json_result)
 	BinaCPP_logger::write_log( "<BinaCPP::get_exchangeInfo>" ) ;
 
 	string url(BINANCE_HOST);  
-	url += "/api/v1/exchangeInfo";
+	url += "/api/v3/exchangeInfo";
 
 	string str_result;
 	curl_api( url, str_result ) ;
@@ -2262,21 +2262,25 @@ BinaCPP::curl_api_with_header( string &url, string &str_result, vector <string> 
 
             for (string& line : lines) {
                 string x_mbx_used_weight = "x-mbx-used-weight";
-
-                if (line.find(x_mbx_used_weight) != 0)
-                    continue;
+                string retry_after = "retry-after";
 
                 size_t delimiter = line.find(": ");
                 if (delimiter == string::npos)
                     continue;
 
-                string interval;
-                if (delimiter > x_mbx_used_weight.size())
-                    interval = line.substr(x_mbx_used_weight.size() + 1, delimiter - x_mbx_used_weight.size() - 1);
+                if (line.find(x_mbx_used_weight) == 0) {
+                    string interval;
+                    if (delimiter > x_mbx_used_weight.size())
+                        interval = line.substr(x_mbx_used_weight.size() + 1, delimiter - x_mbx_used_weight.size() - 1);
 
-                string value = line.substr(delimiter + 2, line.size() - delimiter - 3);
+                    string value = line.substr(delimiter + 2, line.size() - delimiter - 3);
+                    used_weight[interval] = atoi(value.c_str());
+                }
 
-                used_weight[interval] = atoi(value.c_str());
+                if (line.find(retry_after) == 0) {
+                    string value = line.substr(delimiter + 2, line.size() - delimiter - 3);
+                    BinaCPP_logger::write_log( "<BinaCPP::curl_api> retry-after %s" , value.c_str() );
+                }
             }
         }
 	}
