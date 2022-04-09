@@ -25,20 +25,22 @@ using namespace std;
 
 typedef std::function<int(Json::Value &)> CB;
 
+struct BinaCPP_stream {
+    CB callback;
+};
+
 class BinaCPP_websocket {
 
 
 	static struct lws_context *context;
 	static struct lws_protocols protocols[]; 
 
-	static map <struct lws *,CB> handles ;
+	static map <struct lws *, BinaCPP_stream> streams;
 	
 	public:
 		static int  event_cb( struct lws *wsi, enum lws_callback_reasons reason, void *user, void *in, size_t len );
-		static bool connect_endpoint(
-			CB user_cb,
-			const char* path
-		);
+		static lws* connect_endpoint(CB user_cb, const char* path);
+		static bool disconnect_endpoint(lws* wsi);
 		static bool init();
 		static void enter_event_loop();
         static void exit_event_loop();
