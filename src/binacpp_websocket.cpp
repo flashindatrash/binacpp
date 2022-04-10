@@ -166,7 +166,6 @@ BinaCPP_websocket::enter_event_loop()
 		 	break;
 		}
 	}
-	lws_context_destroy( context );
 }
 
 //----------------------------
@@ -175,4 +174,5 @@ void
 BinaCPP_websocket::exit_event_loop ()
 {
     streams.clear();
+    lws_context_destroy(context);
 }
