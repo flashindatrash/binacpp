@@ -20,7 +20,11 @@ int replace_string_once( string& str, const char *from, const char *to , int off
 
 
 string b2a_hex( char *byte_arr, int n );
-time_t get_current_epoch();
+
+class BinaCPP_time {
+public:
+    static long shift;
+};
 unsigned long get_current_ms_epoch();
 
 

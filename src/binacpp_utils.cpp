@@ -71,25 +71,14 @@ string b2a_hex( char *byte_arr, int n ) {
     return HexString;
 }
 
-
-
-//---------------------------------
-time_t get_current_epoch( ) {
-
-    struct timeval tv;
-    gettimeofday(&tv, NULL); 
-
-    return tv.tv_sec ;
-}
+long BinaCPP_time::shift = 0;
 
 //---------------------------------
 unsigned long get_current_ms_epoch( ) {
-
     struct timeval tv;
     gettimeofday(&tv, NULL); 
 
-    return tv.tv_sec * 1000 + tv.tv_usec / 1000 ;
-
+    return tv.tv_sec * 1000 + BinaCPP_time::shift + tv.tv_usec / 1000 ;
 }
 
 //---------------------------
