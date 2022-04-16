@@ -948,6 +948,7 @@ BinaCPP::send_order(
 	const char *newClientOrderId,
 	double stopPrice,
 	double icebergQty,
+	bool test,
 	long recvWindow,
 	Json::Value &json_result ) 
 {	
@@ -960,7 +961,7 @@ BinaCPP::send_order(
 	}
 
 	string url(BINANCE_HOST);
-    url.append("/api/v3/order?");
+    url.append(test ? "/api/v3/order/test?" : "/api/v3/order");
 
 	string action = "POST";
 	
