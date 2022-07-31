@@ -193,6 +193,27 @@ class BinaCPP {
                 long recvWindow,
                 Json::Value &json_result );
 
+		static void get_stakingProjects(
+				const char *product,
+				const char *asset,
+				long current,
+				long size,
+				long recvWindow,
+				Json::Value &json_result );
+
+        static void get_stakingLeftQuota(
+                const char *product,
+                const char *productId,
+                long recvWindow,
+                Json::Value &json_result );
+
+        static void stake(
+                const char *product,
+                const char *productId,
+                double amount,
+                long recvWindow,
+                Json::Value &json_result );
+
 };
 
 

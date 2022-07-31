@@ -961,7 +961,7 @@ BinaCPP::send_order(
 	}
 
 	string url(BINANCE_HOST);
-    url.append(test ? "/api/v3/order/test?" : "/api/v3/order");
+    url.append(test ? "/api/v3/order/test" : "/api/v3/order");
 
 	string action = "POST";
 	
@@ -2178,6 +2178,277 @@ BinaCPP::get_fixedProjects(
 
     BinaCPP_logger::write_log( "<BinaCPP::get_fixedProjects> Done.\n" ) ;
 }
+
+
+//--------------------
+// Get Staking Product List (Signed)
+/*
+GET /sapi/v1/staking/productList
+
+Parameters:
+Name		Type	Mandatory	Description
+product		ENUM	YES			"STAKING" for Locked Staking, "F_DEFI" for flexible DeFi Staking, "L_DEFI" for locked DeFi Staking
+asset		STRING	NO
+current		LONG	NO			Currently querying page. Start from 1. Default:1
+size		LONG	NO			Default:10, Max:100
+recvWindow	LONG	NO
+timestamp	LONG	YES
+*/
+
+void
+BinaCPP::get_stakingProjects(
+		const char *product,
+		const char *asset,
+		long current,
+		long size,
+		long recvWindow,
+		Json::Value &json_result )
+{
+	BinaCPP_logger::write_log( "<BinaCPP::get_stakingProjects>" ) ;
+
+	if ( api_key.size() == 0 || secret_key.size() == 0 ) {
+		BinaCPP_logger::write_log( "<BinaCPP::get_stakingProjects> API Key and Secret Key has not been set." ) ;
+		return ;
+	}
+
+	string url(BINANCE_HOST);
+	url += "/sapi/v1/staking/productList?";
+	string action = "GET";
+
+	string querystring("product=");
+	querystring.append(product);
+
+	if ( strlen( asset ) > 0 ) {
+		querystring.append("&asset=");
+		querystring.append(asset);
+	}
+
+	if ( current > 0 ) {
+		querystring.append("&current=");
+		querystring.append(to_string(current));
+	}
+
+	if ( size > 0 ) {
+		querystring.append("&size=");
+		querystring.append(to_string(size));
+	}
+
+	if ( recvWindow > 0 ) {
+		querystring.append("&recvWindow=");
+		querystring.append(to_string(recvWindow));
+	}
+
+	querystring.append("&timestamp=");
+	querystring.append(to_string( get_current_ms_epoch()));
+
+	string signature =  hmac_sha256( secret_key.c_str(), querystring.c_str() );
+	querystring.append("&signature=");
+	querystring.append(signature);
+
+	url.append( querystring );
+
+	vector <string> extra_http_header;
+	string header_chunk("X-MBX-APIKEY: ");
+	header_chunk.append( api_key );
+	extra_http_header.push_back(header_chunk);
+
+	string post_data = "";
+
+	BinaCPP_logger::write_log( "<BinaCPP::get_stakingProjects> url = |%s|" , url.c_str() ) ;
+
+	string str_result;
+	curl_api_with_header( url, str_result , extra_http_header, post_data , action ) ;
+
+	if ( str_result.size() > 0 ) {
+
+		try {
+			Json::Reader reader;
+			json_result.clear();
+			reader.parse( str_result , json_result );
+
+		} catch ( exception &e ) {
+			BinaCPP_logger::write_log( "<BinaCPP::get_stakingProjects> Error ! %s", e.what() );
+		}
+		BinaCPP_logger::write_log( "<BinaCPP::get_stakingProjects> Done." ) ;
+
+	} else {
+		BinaCPP_logger::write_log( "<BinaCPP::get_stakingProjects> Failed to get anything." ) ;
+	}
+
+	BinaCPP_logger::write_log( "<BinaCPP::get_stakingProjects> Done.\n" ) ;
+}
+
+
+
+//--------------------
+// Get Personal Left Quota of Staking Product (Signed)
+/*
+GET /sapi/v1/staking/personalLeftQuota
+
+Parameters:
+Name		Type	Mandatory	Description
+product		ENUM	YES			"STAKING" for Locked Staking, "F_DEFI" for flexible DeFi Staking, "L_DEFI" for locked DeFi Staking
+productId	STRING	YES
+recvWindow	LONG	NO
+timestamp	LONG	YES
+*/
+
+void
+BinaCPP::get_stakingLeftQuota(
+        const char *product,
+        const char *productId,
+        long recvWindow,
+        Json::Value &json_result )
+{
+    BinaCPP_logger::write_log( "<BinaCPP::get_stakingLeftQuota>" ) ;
+
+    if ( api_key.size() == 0 || secret_key.size() == 0 ) {
+        BinaCPP_logger::write_log( "<BinaCPP::get_stakingLeftQuota> API Key and Secret Key has not been set." ) ;
+        return ;
+    }
+
+    string url(BINANCE_HOST);
+    url += "/sapi/v1/staking/personalLeftQuota?";
+    string action = "GET";
+
+    string querystring("product=");
+    querystring.append(product);
+
+    querystring.append("&productId=");
+    querystring.append(productId);
+
+    if ( recvWindow > 0 ) {
+        querystring.append("&recvWindow=");
+        querystring.append(to_string(recvWindow));
+    }
+
+    querystring.append("&timestamp=");
+    querystring.append(to_string( get_current_ms_epoch()));
+
+    string signature =  hmac_sha256( secret_key.c_str(), querystring.c_str() );
+    querystring.append("&signature=");
+    querystring.append(signature);
+
+    url.append( querystring );
+
+    vector <string> extra_http_header;
+    string header_chunk("X-MBX-APIKEY: ");
+    header_chunk.append( api_key );
+    extra_http_header.push_back(header_chunk);
+
+    string post_data = "";
+
+    BinaCPP_logger::write_log( "<BinaCPP::get_stakingLeftQuota> url = |%s|" , url.c_str() ) ;
+
+    string str_result;
+    curl_api_with_header( url, str_result , extra_http_header, post_data , action ) ;
+
+    if ( str_result.size() > 0 ) {
+
+        try {
+            Json::Reader reader;
+            json_result.clear();
+            reader.parse( str_result , json_result );
+
+        } catch ( exception &e ) {
+            BinaCPP_logger::write_log( "<BinaCPP::get_stakingLeftQuota> Error ! %s", e.what() );
+        }
+        BinaCPP_logger::write_log( "<BinaCPP::get_stakingLeftQuota> Done." ) ;
+
+    } else {
+        BinaCPP_logger::write_log( "<BinaCPP::get_stakingLeftQuota> Failed to get anything." ) ;
+    }
+
+    BinaCPP_logger::write_log( "<BinaCPP::get_personalLeftQuota> Done.\n" ) ;
+}
+
+
+
+//--------------------
+// Purchase Staking Product (Signed)
+/*
+POST /sapi/v1/staking/purchase
+
+Parameters:
+Name		Type	Mandatory	Description
+product		ENUM	YES			"STAKING" for Locked Staking, "F_DEFI" for flexible DeFi Staking, "L_DEFI" for locked DeFi Staking
+productId	STRING	YES
+amount	    DECIMAL	YES
+recvWindow	LONG	NO
+timestamp	LONG	YES
+*/
+
+void
+BinaCPP::stake(
+        const char *product,
+        const char *productId,
+        double amount,
+        long recvWindow,
+        Json::Value &json_result )
+{
+    BinaCPP_logger::write_log( "<BinaCPP::stake>" ) ;
+
+    if ( api_key.size() == 0 || secret_key.size() == 0 ) {
+        BinaCPP_logger::write_log( "<BinaCPP::stake> API Key and Secret Key has not been set." ) ;
+        return ;
+    }
+
+    string url(BINANCE_HOST);
+    url += "/sapi/v1/staking/purchase";
+    string action = "POST";
+
+    string post_data = "";
+
+    post_data.append("product=");
+    post_data.append(product);
+
+    post_data.append("&productId=");
+    post_data.append(productId);
+
+    post_data.append( "&amount=");
+    post_data.append( to_string( amount ));
+
+    if ( recvWindow > 0 ) {
+        post_data.append("&recvWindow=");
+        post_data.append(to_string(recvWindow));
+    }
+
+    post_data.append("&timestamp=");
+    post_data.append(to_string( get_current_ms_epoch()));
+
+    string signature =  hmac_sha256( secret_key.c_str(), post_data.c_str() );
+    post_data.append("&signature=");
+    post_data.append(signature);
+
+    vector <string> extra_http_header;
+    string header_chunk("X-MBX-APIKEY: ");
+    header_chunk.append( api_key );
+    extra_http_header.push_back(header_chunk);
+
+    BinaCPP_logger::write_log( "<BinaCPP::stake> url = |%s|" , url.c_str() ) ;
+
+    string str_result;
+    curl_api_with_header( url, str_result , extra_http_header, post_data , action ) ;
+
+    if ( str_result.size() > 0 ) {
+
+        try {
+            Json::Reader reader;
+            json_result.clear();
+            reader.parse( str_result , json_result );
+
+        } catch ( exception &e ) {
+            BinaCPP_logger::write_log( "<BinaCPP::stake> Error ! %s", e.what() );
+        }
+        BinaCPP_logger::write_log( "<BinaCPP::stake> Done." ) ;
+
+    } else {
+        BinaCPP_logger::write_log( "<BinaCPP::stake> Failed to get anything." ) ;
+    }
+
+    BinaCPP_logger::write_log( "<BinaCPP::stake> Done.\n" ) ;
+}
+
 
 //-----------------
 // Curl's callback
