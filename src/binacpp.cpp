@@ -943,8 +943,8 @@ BinaCPP::send_order(
 	const char *side,
 	const char *type,
 	const char *timeInForce,
-	double quantity,
-	double price,
+    const char *quantity,
+    const char *price,
 	const char *newClientOrderId,
 	double stopPrice,
 	double icebergQty,
@@ -978,10 +978,10 @@ BinaCPP::send_order(
 		post_data.append("&timeInForce=");
 		post_data.append( timeInForce );
 		post_data.append("&price=");
-		post_data.append( to_string( price) );
+		post_data.append( price );
 	}
 	post_data.append("&quantity=");
-	post_data.append( to_string( quantity) );
+	post_data.append( quantity );
 	
 
 	if ( strlen( newClientOrderId ) > 0 ) {
@@ -1992,7 +1992,7 @@ timestamp	LONG	YES
 void
 BinaCPP::redeem_flexibleProduct(
         const char *productId,
-        double amount,
+        const char *amount,
         const char *type,
         long recvWindow,
         Json::Value &json_result )
@@ -2012,7 +2012,7 @@ BinaCPP::redeem_flexibleProduct(
     post_data.append( productId );
 
     post_data.append("&amount=");
-    post_data.append( to_string(amount) );
+    post_data.append( amount );
 
     post_data.append("&type=");
     post_data.append( type );
@@ -2382,7 +2382,7 @@ void
 BinaCPP::stake(
         const char *product,
         const char *productId,
-        double amount,
+        const char *amount,
         long recvWindow,
         Json::Value &json_result )
 {
@@ -2406,7 +2406,7 @@ BinaCPP::stake(
     post_data.append(productId);
 
     post_data.append( "&amount=");
-    post_data.append( to_string( amount ));
+    post_data.append(amount);
 
     if ( recvWindow > 0 ) {
         post_data.append("&recvWindow=");

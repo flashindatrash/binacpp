@@ -103,8 +103,8 @@ class BinaCPP {
 			const char *side,
 			const char *type,
 			const char *timeInForce,
-			double quantity,
-			double price,
+            const char *quantity,
+            const char *price,
 			const char *newClientOrderId,
 			double stopPrice,
 			double icebergQty,
@@ -177,7 +177,7 @@ class BinaCPP {
 
         static void redeem_flexibleProduct(
                 const char *productId,
-                double amount,
+                const char *amount,
                 const char *type,
                 long recvWindow,
                 Json::Value &json_result );
@@ -210,7 +210,7 @@ class BinaCPP {
         static void stake(
                 const char *product,
                 const char *productId,
-                double amount,
+                const char *amount,
                 long recvWindow,
                 Json::Value &json_result );
 
