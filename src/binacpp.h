@@ -167,9 +167,6 @@ class BinaCPP {
 			Json::Value &json_result );
 
 
-        // SAPI
-        static void get_savings( long recvWindow , Json::Value &json_result );
-
         static void get_flexibleProducts(
                 const char *asset,
                 long recvWindow,
